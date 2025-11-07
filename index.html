@@ -3,205 +3,233 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Learn Japanese — PirateRuler (offline)</title>
-<meta name="description" content="One-page Japanese learning: kana charts, flashcards, quizzes, vocab — client-side only." />
+<title>Learn Japanese — PirateRuler.com</title>
+<meta name="description" content="Learn Japanese — Hiragana, Katakana, vocab & quizzes. One page, offline, private." />
 <meta name="theme-color" content="#f7fbff" />
+<link rel="icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect rx="14" width="64" height="64" fill="%236b7dff"/><text x="50%" y="50%" font-family="Inter,Arial,sans-serif" font-weight="800" font-size="26" text-anchor="middle" alignment-baseline="central" fill="white">PR</text></svg>'>
 <style>
   :root{
-    --bg:#f3f7fb; --card:#fff; --muted:#6b7480; --text:#0b2130;
+    --bg:#f3f7fb; --card:#ffffff; --muted:#6b7480; --text:#0b2130;
     --accent-start:#6b7dff; --accent-end:#0bb3ff;
     --glass: rgba(11,17,28,0.04);
-    --radius:14px; --shadow-sm: 0 8px 24px rgba(3,12,30,0.08);
+    --radius:14px;
+    --shadow-lg: 0 18px 50px rgba(3,12,30,0.18), inset 0 1px 0 rgba(255,255,255,0.6);
+    --shadow-sm: 0 8px 24px rgba(3,12,30,0.08);
   }
-  html.dark{ --bg:#071225; --card:#061028; --muted:#98a7bf; --text:#e9f1ff; --accent-start:#5ab3ff; --accent-end:#6b7dff; --glass: rgba(255,255,255,0.02); }
-  html.ocean{ --bg:#e8f7fb; --card:#ffffff; --muted:#4f6b75; --text:#063242; --accent-start:#00c2d1; --accent-end:#2b9fff; }
-  html.sunset{ --bg:#fff6f8; --card:#fff; --muted:#7a6b77; --text:#2a1020; --accent-start:#ff7aa2; --accent-end:#ffb86b; }
+  /* themes */
+  html.dark { --bg:#071225; --card:#061028; --muted:#98a7bf; --text:#e9f1ff; --glass: rgba(255,255,255,0.02); --accent-start:#5ab3ff; --accent-end:#6b7dff; }
+  html.ocean { --bg:#e8f7fb; --card:#ffffff; --muted:#4f6b75; --text:#063242; --glass: rgba(6,50,66,0.03); --accent-start:#00c2d1; --accent-end:#2b9fff; }
+  html.sunset { --bg:#fff6f8; --card:#fff; --muted:#7a6b77; --text:#2a1020; --glass: rgba(42,16,32,0.03); --accent-start:#ff7aa2; --accent-end:#ffb86b; }
+
   *{box-sizing:border-box}
-  body{margin:0;font-family:Inter,system-ui, -apple-system, "Segoe UI", Roboto, Arial;color:var(--text);background:linear-gradient(180deg,var(--bg),#e9f6ff);-webkit-font-smoothing:antialiased;padding:14px}
-  .container{max-width:1100px;margin:0 auto}
-  header.header{display:flex;align-items:center;justify-content:space-between;padding:12px;border-radius:12px;background:linear-gradient(90deg, rgba(107,125,255,0.06), rgba(11,179,255,0.02));box-shadow:var(--shadow-sm)}
-  .brand{display:flex;gap:12px;align-items:center}
+  body{background:linear-gradient(180deg,var(--bg), #e9f6ff); font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; color:var(--text); margin:0; -webkit-font-smoothing:antialiased}
+  .container{max-width:1100px;margin:14px auto;padding:14px}
+
+  header.header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:12px;background:linear-gradient(90deg, rgba(107,125,255,0.06), rgba(11,179,255,0.02));box-shadow:var(--shadow-sm)}
+  .brand{display:flex;gap:12px;align-items:center;min-width:0}
   .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent-start),var(--accent-end));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900}
-  .title-strong{font-size:18px;font-weight:900}
+  .title-strong{font-size:18px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .by{font-size:12px;color:var(--muted);margin-top:2px}
-  .controls{display:flex;gap:8px;align-items:center}
-  .btn{padding:8px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:800}
-  .btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
-  .btn.primary{background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:white}
-  main.grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
-  @media(max-width:980px){ main.grid{grid-template-columns:1fr} .sidebar{position:static} }
-  .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow-sm);border:1px solid rgba(0,0,0,0.04)}
-  .small{color:var(--muted);font-size:13px}
-  /* Kana grid */
-  .kana-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-  .kana{padding:12px;border-radius:8px;background:linear-gradient(180deg, rgba(0,0,0,0.02),transparent);text-align:center;font-weight:800;cursor:pointer}
-  .kana .jp{font-size:22px}
-  .kana .rom{font-size:12px;color:var(--muted);margin-top:6px}
-  /* flashcard */
-  .flash{height:180px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;border-radius:10px;background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:#fff;cursor:pointer}
-  .flash.back{background:linear-gradient(90deg,#fff,#f3f3f3);color:var(--text);border:1px solid rgba(0,0,0,0.06)}
-  .vocab-list{max-height:320px;overflow:auto}
-  input[type="text"],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:transparent;color:var(--text)}
-  .row{display:flex;gap:8px}
-  .row > *{flex:1}
-  .muted{color:var(--muted);font-size:13px}
-  footer{margin-top:18px;text-align:center;color:var(--muted)}
+  .header-actions{display:flex;align-items:center;gap:8px}
+  .btn{padding:8px 10px;border-radius:10px;border:none;cursor:pointer;font-weight:800;background:transparent}
+  .btn.theme{background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:#fff;border-radius:999px;padding:8px 12px;position:relative;overflow:visible}
+  /* glow animation for theme button */
+  .btn.theme::after{
+    content:'';position:absolute;inset:-4px;border-radius:999px;background:linear-gradient(90deg,var(--accent-start),var(--accent-end));filter:blur(8px);opacity:0;transition:opacity .18s;
+  }
+  .btn.theme.glow::after{opacity:0.95; animation:glowPulse 2.8s infinite;}
+  @keyframes glowPulse{0%{transform:scale(.98)}50%{transform:scale(1.03)}100%{transform:scale(.98)}}
+
+  .hamb{width:46px;height:46px;border-radius:10px;background:var(--glass);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
+  .hero{margin-top:16px;padding:18px;border-radius:14px;background:var(--card);box-shadow:var(--shadow-lg);border:1px solid rgba(0,0,0,0.04)}
+  .hero .title{font-size:22px;font-weight:900;margin:0}
+  .hero .hint{color:var(--muted);margin-top:6px}
+
+  .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+  .input{flex:1;min-width:180px}
+  input[type="text"], input[type="number"], select, .search{ width:100%;padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:16px;background:var(--card);color:var(--text) }
+
+  .grid{display:grid;grid-template-columns:1fr 360px;gap:18px;margin-top:18px}
+  @media(max-width:980px){ .grid{grid-template-columns:1fr} .sidebar{position:fixed;width:94vw} }
+
+  .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow-sm);border:1px solid rgba(0,0,0,0.04)}
+  .kana-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+  .kana-tile{padding:22px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.6), transparent);text-align:center;cursor:pointer;box-shadow:var(--shadow-sm)}
+  .kana-tile .jp{font-size:26px;font-weight:900}
+  .kana-tile .rom{font-size:12px;color:var(--muted);margin-top:6px}
+
+  .panel{display:flex;flex-direction:column;gap:12px}
+  .muted{color:var(--muted)}
+  .footer{margin-top:18px;padding:14px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.96));text-align:center;box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .visit{padding:10px 18px;border-radius:999px;background:linear-gradient(90deg,#ff7aa2 0%, #6b7dff 100%);color:#fff;font-weight:800;text-decoration:none}
+
+  /* sidebar */
+  .sidebar{position:fixed;right:0;top:0;height:100vh;width:360px;background:var(--card);box-shadow:-40px 0 80px rgba(2,8,20,0.25);padding:18px;transform:translateX(110%);transition:transform .28s cubic-bezier(.2,.9,.3,1);border-left:1px solid rgba(0,0,0,0.04);z-index:999}
+  .sidebar.open{transform:translateX(0)}
+  .sidebar h3{margin:0 0 8px 0}
+  .sidebar a{display:block;padding:8px;border-radius:8px;color:var(--text);text-decoration:none}
+  .sidebar .muted{color:var(--muted);font-size:13px}
+
+  /* quiz area */
+  .quiz-card{display:flex;flex-direction:column;gap:10px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .choice{padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);background:var(--card);cursor:pointer;font-weight:700}
+  .choice.correct{outline:3px solid rgba(0,200,120,0.12)}
+  .choice.wrong{outline:3px solid rgba(255,80,80,0.12)}
+  .small{font-size:13px;color:var(--muted)}
+
+  /* search results & vocab list */
+  .vocab-list{display:grid;gap:8px}
+  .vocab-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,0.04)}
+  .vocab-left{display:flex;gap:12px;align-items:center}
+  .jp-large{font-size:20px;font-weight:900}
+  .rom-small{font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="container">
   <header class="header" role="banner">
     <div class="brand">
-      <div class="logo">PR</div>
+      <div class="logo" aria-hidden="true">PR</div>
       <div>
-        <div class="title-strong">Learn Japanese — Offline</div>
-        <div class="by">One page • No API • Private</div>
+        <div class="title-strong">Learn Japanese</div>
+        <div class="by">by PirateRuler.com</div>
       </div>
     </div>
-    <div class="controls">
-      <div style="position:relative">
-        <button id="themeBtn" class="btn ghost">Ocean ▾</button>
-        <div id="themeList" style="display:none;position:absolute;right:0;top:44px;background:var(--card);border-radius:8px;padding:6px;box-shadow:var(--shadow-sm)">
-          <div class="t" data-theme="light" style="padding:6px;cursor:pointer">Light</div>
-          <div class="t" data-theme="dark" style="padding:6px;cursor:pointer">Dark</div>
-          <div class="t" data-theme="ocean" style="padding:6px;cursor:pointer">Ocean</div>
-          <div class="t" data-theme="sunset" style="padding:6px;cursor:pointer">Sunset</div>
+
+    <div class="header-actions" role="navigation">
+      <div class="theme-select" id="themeSelectWrap" style="position:relative">
+        <button id="themeBtn" class="btn theme glow" title="Theme">Ocean ▾</button>
+        <div id="themeList" style="display:none;position:absolute;right:0;top:48px;background:var(--card);border-radius:10px;padding:8px;box-shadow:var(--shadow-sm);z-index:1000;">
+          <div class="theme-item" data-theme="light" style="padding:8px;cursor:pointer">Light</div>
+          <div class="theme-item" data-theme="dark" style="padding:8px;cursor:pointer">Dark</div>
+          <div class="theme-item" data-theme="ocean" style="padding:8px;cursor:pointer">Ocean</div>
+          <div class="theme-item" data-theme="sunset" style="padding:8px;cursor:pointer">Sunset</div>
         </div>
       </div>
-      <button id="sidebarBtn" class="btn ghost">Menu</button>
+      <div id="hambBtn" class="hamb" title="Open menu" aria-controls="sidebar">☰</div>
     </div>
   </header>
 
-  <main class="grid">
-    <!-- LEFT: main tools -->
-    <div>
-      <!-- Intro -->
+  <section class="hero" aria-labelledby="heroTitle">
+    <h1 id="heroTitle" class="title">Japanese Starter — Hiragana, Katakana, Vocab</h1>
+    <div class="hint">Interactive charts, flashcards & quizzes — offline and private. Click kana to hear it (speech) — try the quiz for 100 questions.</div>
+  </section>
+
+  <div class="grid">
+    <main>
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <h2 style="margin:0">Japanese Starter — Hiragana, Katakana, Vocab</h2>
-            <div class="small">Interactive charts, flashcards & quizzes — offline and private.</div>
+        <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+          <div style="flex:1">
+            <div style="font-weight:900;font-size:18px">Kana Charts</div>
+            <div class="small muted">Switch chart, search romaji or kana</div>
           </div>
-          <div class="muted">Tip: click kana to hear it (browser speechSynthesis)</div>
+          <div style="width:320px">
+            <input id="searchInput" class="search" placeholder="Search romaji, kana, or english (e.g. 'ka' or 'water')" />
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div id="chartArea">
+          <div style="display:flex;gap:10px;margin-bottom:12px">
+            <button id="btnHira" class="btn ghost">Hiragana</button>
+            <button id="btnKata" class="btn ghost">Katakana</button>
+            <button id="btnVocab" class="btn ghost">Vocab</button>
+            <button id="btnQuiz" class="btn primary">Start 100 Q Quiz</button>
+          </div>
+
+          <div id="kanaGrid" class="kana-grid"></div>
         </div>
       </div>
 
-      <!-- Kana -->
-      <div class="card" style="margin-top:12px">
-        <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
-          <strong>Kana Charts</strong>
-          <div style="display:flex;gap:6px;align-items:center">
-            <select id="kanaSelect" aria-label="Kana">
-              <option value="hiragana">Hiragana</option>
-              <option value="katakana">Katakana</option>
-            </select>
-            <input id="kanaFilter" type="text" placeholder="Search romaji or jp (e.g. 'ka' or 'か')" style="width:220px"/>
-          </div>
-        </div>
-        <div id="kanaGrid" class="kana-grid" style="margin-top:12px"></div>
-      </div>
-
-      <!-- Flashcards -->
       <div class="card" style="margin-top:12px">
         <div style="display:flex;justify-content:space-between;align-items:center">
-          <strong>Flashcards</strong>
+          <div style="font-weight:900">Vocabulary & Flashcards</div>
+          <div class="small muted">Click word to hear pronunciation</div>
+        </div>
+        <div style="height:8px"></div>
+        <div id="vocabList" class="vocab-list"></div>
+      </div>
+
+      <div id="quizPanel" class="card" style="margin-top:12px;display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:900">Quiz — 100 Questions</div>
+          <div class="small muted" id="quizProgress">0 / 100</div>
+        </div>
+        <div style="height:8px"></div>
+        <div id="quizArea" class="quiz-card">
+          <div id="quizQuestion" style="font-size:18px;font-weight:900">Question will appear here</div>
+          <div id="quizPrompt" class="small muted">Prompt type</div>
+          <div class="choices" id="quizChoices"></div>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end">
+            <button id="nextBtn" class="btn ghost" disabled>Next</button>
+            <button id="restartBtn" class="btn ghost">Restart Quiz</button>
+          </div>
+        </div>
+        <div style="height:8px"></div>
+        <div id="quizResult" class="small muted"></div>
+      </div>
+    </main>
+
+    <!-- RIGHT: feature panel & sidebar trigger -->
+    <aside>
+      <div class="card feature-panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:900">Why this tool?</div>
+          <div class="small muted">Offline • Private</div>
+        </div>
+
+        <div style="margin-top:12px" class="panel">
+          <div class="small muted">Interactive kana with speech, vocabulary flashcards and a full 100-question quiz to practice. Everything runs client-side—no accounts required.</div>
           <div style="display:flex;gap:8px">
-            <button id="flipBtn" class="btn ghost">Flip</button>
-            <button id="prevBtn" class="btn ghost">Prev</button>
-            <button id="nextBtn" class="btn primary">Next</button>
-            <label style="display:flex;align-items:center;gap:6px" class="muted"><input id="autoPlay" type="checkbox"/> Auto</label>
+            <button id="openSidebar" class="btn ghost">Menu</button>
+            <button id="downloadVocab" class="btn ghost">Download Vocab (.json)</button>
           </div>
         </div>
-        <div id="flashWrap" style="margin-top:12px">
-          <div id="flashCard" class="flash" role="button" aria-pressed="false">Click Next</div>
-          <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
-            <div style="flex:1">
-              <input id="deckFilter" type="text" placeholder="Filter deck (search romaji or meaning)"/>
-            </div>
-            <div><button id="startStudy" class="btn primary">Study Deck</button></div>
-          </div>
+
+        <div style="height:12px"></div>
+
+        <div style="font-weight:900">Quick actions</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+          <button id="jumpQuiz" class="btn ghost">Jump to Quiz</button>
+          <button id="showAllV" class="btn ghost">Show all vocab</button>
+          <button id="shuffleQuiz" class="btn ghost">Shuffle Quiz</button>
         </div>
-      </div>
 
-      <!-- Quiz -->
-      <div class="card" style="margin-top:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <strong>Quick Quiz</strong>
-          <div class="muted">Multiple choice from current deck</div>
-        </div>
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-          <select id="quizMode"><option value="jp->en">Japanese → English</option><option value="en->jp">English → Japanese</option></select>
-          <select id="numQ"><option>5</option><option>10</option><option>20</option></select>
-          <button id="startQuiz" class="btn primary">Start</button>
-          <button id="shuffleBtn" class="btn ghost">Shuffle</button>
-        </div>
-        <div id="quizArea" style="margin-top:12px"></div>
-      </div>
+        <div style="height:12px"></div>
 
-      <!-- Vocab editor -->
-      <div class="card" style="margin-top:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center"><strong>Vocabulary</strong><div class="small">Add your words — saved locally</div></div>
-        <div style="margin-top:8px;display:flex;gap:8px">
-          <input id="v_jp" placeholder="Japanese (kana / kanji)" type="text">
-          <input id="v_rom" placeholder="Romaji" type="text">
-          <input id="v_en" placeholder="Meaning (English)" type="text">
-          <button id="addV" class="btn primary">Add</button>
-        </div>
-        <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
-          <input id="v_search" placeholder="Search vocab (jp/rom/en)" type="text" style="flex:1"/>
-          <button id="exportBtn" class="btn ghost">Export JSON</button>
-          <input id="importFile" type="file" accept=".json" style="display:none"/>
-          <button id="importBtn" class="btn ghost">Import JSON</button>
-        </div>
-        <div class="vocab-list card" id="vocabList" style="margin-top:8px;padding:8px"></div>
-      </div>
-    </div>
-
-    <!-- RIGHT: sidebar -->
-    <aside class="sidebar card" style="height:fit-content">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div>
-          <strong>Progress & Tools</strong>
-          <div class="small">Local, private — stored in your browser</div>
-        </div>
-        <div class="muted" id="countInfo">0 items</div>
-      </div>
-
-      <hr style="margin:12px 0"/>
-
-      <div style="display:flex;gap:8px;flex-direction:column">
-        <button id="jumpLocal" class="btn ghost">Jump to local time</button>
-        <button id="clearData" class="btn ghost">Clear stored data</button>
-        <button id="speakSettings" class="btn ghost">Voice: Toggle</button>
-      </div>
-
-      <hr style="margin:12px 0"/>
-
-      <div>
-        <strong>How it works</strong>
-        <p class="small">All data and learning are client-side. Use the speech button to hear pronunciation. Export your vocab to keep backups.</p>
+        <div class="small muted">Tip: you can click any kana or vocab row to hear it (browser speech). Use the search to filter quickly.</div>
       </div>
     </aside>
-  </main>
+  </div>
 
-  <footer class="muted">
-    © <span id="year"></span> PirateRuler — Learn Japanese (offline)
+  <footer class="footer">
+    <small class="muted">© <span id="year"></span> Learn Japanese — PirateRuler</small>
+    <a class="visit" href="https://pirateruler.com" target="_blank" rel="noopener noreferrer">Visit PirateRuler.com</a>
   </footer>
 </div>
 
+<!-- Sidebar (same style as calculator) -->
+<aside id="sidebar" class="sidebar" aria-hidden="true">
+  <div style="display:flex;justify-content:flex-end"><button id="closeSidebar" class="btn ghost">Close</button></div>
+  <h3>Learn Japanese</h3>
+  <nav style="display:flex;flex-direction:column;gap:8px;margin-top:10px">
+    <a href="#" id="menuKana">Kana Charts</a>
+    <a href="#" id="menuVocab">Vocabulary</a>
+    <a href="#" id="menuQuiz">100 Q Quiz</a>
+    <a href="https://pirateruler.com/post/about.html" target="_blank">About — PirateRuler</a>
+    <a href="https://pirateruler.com/post/privacy.html" target="_blank">Privacy Policy</a>
+    <a href="https://pirateruler.com/post/contact.html" target="_blank">Contact</a>
+  </nav>
+  <div style="margin-top:18px;color:var(--muted);font-size:13px">
+    Offline resource — all data stored in the page.
+  </div>
+</aside>
+
 <script>
-/* Simple offline Japanese one-page app
-   - Kana chart (hiragana/katakana)
-   - Vocab CRUD (localStorage)
-   - Flashcards & Quiz
-   - Speech via speechSynthesis
-*/
-
-// util
-const $ = id => document.getElementById(id);
-$('year').textContent = new Date().getFullYear();
-
-// Basic kana dataset (short / core set). Expand as needed.
+/* --- data: kana & vocab --- */
+/* Simple hiragana table (core 46) */
 const HIRAGANA = [
   ['あ','a'],['い','i'],['う','u'],['え','e'],['お','o'],
   ['か','ka'],['き','ki'],['く','ku'],['け','ke'],['こ','ko'],
@@ -210,288 +238,324 @@ const HIRAGANA = [
   ['な','na'],['に','ni'],['ぬ','nu'],['ね','ne'],['の','no'],
   ['は','ha'],['ひ','hi'],['ふ','fu'],['へ','he'],['ほ','ho'],
   ['ま','ma'],['み','mi'],['む','mu'],['め','me'],['も','mo'],
-  ['や','ya'],['ゆ','yu'],['よ','yo'],['ら','ra'],['り','ri'],
-  ['る','ru'],['れ','re'],['ろ','ro'],['わ','wa'],['を','wo'],
-  ['ん','n']
+  ['や','ya'],['ゆ','yu'],['よ','yo'],
+  ['ら','ra'],['り','ri'],['る','ru'],['れ','re'],['ろ','ro'],
+  ['わ','wa'],['を','wo'],['ん','n']
 ];
-const KATAKANA = HIRAGANA.map(([k,r]) => [ toKatakana(k), r ]);
+/* Katakana: same set as romaji but different chars (small sample) */
+const KATAKANA = [
+  ['ア','a'],['イ','i'],['ウ','u'],['エ','e'],['オ','o'],
+  ['カ','ka'],['キ','ki'],['ク','ku'],['ケ','ke'],['コ','ko'],
+  ['サ','sa'],['シ','shi'],['ス','su'],['セ','se'],['ソ','so'],
+  ['タ','ta'],['チ','chi'],['ツ','tsu'],['テ','te'],['ト','to'],
+  ['ナ','na'],['ニ','ni'],['ヌ','nu'],['ネ','ne'],['ノ','no'],
+  ['ハ','ha'],['ヒ','hi'],['フ','fu'],['ヘ','he'],['ホ','ho'],
+  ['マ','ma'],['ミ','mi'],['ム','mu'],['メ','me'],['モ','mo'],
+  ['ヤ','ya'],['ユ','yu'],['ヨ','yo'],
+  ['ラ','ra'],['リ','ri'],['ル','ru'],['レ','re'],['ロ','ro'],
+  ['ワ','wa'],['ヲ','wo'],['ン','n']
+];
 
-// small helper to convert hiragana char to katakana (unicode shift)
-function toKatakana(s){
-  return s.replace(/[\u3041-\u3096]/g, c => String.fromCharCode(c.charCodeAt(0) + 0x60));
+/* VOCAB: 100 common words (romaji, kana, english) — editable */
+const VOCAB = [
+  {r:'konnichiwa', jp:'こんにちは', en:'Hello'},
+  {r:'ohayou', jp:'おはよう', en:'Good morning'},
+  {r:'oyasumi', jp:'おやすみ', en:'Good night'},
+  {r:'arigatou', jp:'ありがとう', en:'Thank you'},
+  {r:'sumimasen', jp:'すみません', en:'Excuse me / Sorry'},
+  {r:'hai', jp:'はい', en:'Yes'},
+  {r:'iie', jp:'いいえ', en:'No'},
+  {r:'onegai', jp:'お願いします', en:'Please'},
+  {r:'gomen', jp:'ごめん', en:'Sorry'},
+  {r:'daijoubu', jp:'大丈夫', en:'It\'s OK'},
+  {r:'taberu', jp:'食べる', en:'To eat'},
+  {r:'nomu', jp:'飲む', en:'To drink'},
+  {r:'miru', jp:'見る', en:'To see/watch'},
+  {r:'kiku', jp:'聞く', en:'To listen'},
+  {r:'yomu', jp:'読む', en:'To read'},
+  {r:'kaku', jp:'書く', en:'To write'},
+  {r:'hanasu', jp:'話す', en:'To speak'},
+  {r:'wakaru', jp:'分かる', en:'To understand'},
+  {r:'wakarimasen', jp:'分かりません', en:'I don\'t understand'},
+  {r:'namae', jp:'名前', en:'Name'},
+  {r:'watashi', jp:'私', en:'I / me'},
+  {r:'anata', jp:'あなた', en:'You'},
+  {r:'tomodachi', jp:'友達', en:'Friend'},
+  {r:'kazoku', jp:'家族', en:'Family'},
+  {r:'kare', jp:'彼', en:'He / boyfriend'},
+  {r:'kanojo', jp:'彼女', en:'She / girlfriend'},
+  {r:'aisuru', jp:'愛する', en:'To love'},
+  {r:'suimasen', jp:'すいません', en:'Excuse me (alt)'},
+  {r:'iku', jp:'行く', en:'To go'},
+  {r:'kuru', jp:'来る', en:'To come'},
+  {r:'kaeru', jp:'帰る', en:'To return'},
+  {r:'hashiru', jp:'走る', en:'To run'},
+  {r:'aruku', jp:'歩く', en:'To walk'},
+  {r:'shiru', jp:'知る', en:'To know'},
+  {r:'hoshii', jp:'欲しい', en:'Want'},
+  {r:'takai', jp:'高い', en:'Expensive / tall'},
+  {r:'yasui', jp:'安い', en:'Cheap'},
+  {r:'ookii', jp:'大きい', en:'Big'},
+  {r:'chiisai', jp:'小さい', en:'Small'},
+  {r:'atsui', jp:'暑い', en:'Hot (weather)'},
+  {r:'samui', jp:'寒い', en:'Cold (weather)'},
+  {r:'atsui2', jp:'熱い', en:'Hot (object)'},
+  {r:'samui2', jp:'冷たい', en:'Cold (object)'},
+  {r:'oishii', jp:'おいしい', en:'Delicious'},
+  {r:'まずい', jp:'まずい', en:'Bad taste'},
+  {r:'mizu', jp:'水', en:'Water'},
+  {r:'tabemono', jp:'食べ物', en:'Food'},
+  {r:'gohan', jp:'ご飯', en:'Rice/meal'},
+  {r:'nani', jp:'何', en:'What'},
+  {r:'doko', jp:'どこ', en:'Where'},
+  {r:'itsu', jp:'いつ', en:'When'},
+  {r:'dare', jp:'誰', en:'Who'},
+  {r:'naze', jp:'何故', en:'Why'},
+  {r:'dou', jp:'どう', en:'How'},
+  {r:'toire', jp:'トイレ', en:'Toilet'},
+  {r:'eki', jp:'駅', en:'Station'},
+  {r:'densha', jp:'電車', en:'Train'},
+  {r:'basu', jp:'バス', en:'Bus'},
+  {r:'kuko', jp:'空港', en:'Airport'},
+  {r:'hoteru', jp:'ホテル', en:'Hotel'},
+  {r:'furo', jp:'風呂', en:'Bath'},
+  {r:'heya', jp:'部屋', en:'Room'},
+  {r:'michi', jp:'道', en:'Road'},
+  {r:'hidari', jp:'左', en:'Left'},
+  {r:'migi', jp:'右', en:'Right'},
+  {r:'massugu', jp:'真っ直ぐ', en:'Straight'},
+  {r:'tomete', jp:'止めて', en:'Stop'},
+  {r:'kiite', jp:'聞いて', en:'Listen (imperative)'},
+  {r:'tetsudatte', jp:'手伝って', en:'Help me'},
+  {r:'kiken', jp:'危険', en:'Danger'},
+  {r:'keisatsu', jp:'警察', en:'Police'},
+  {r:'byouin', jp:'病院', en:'Hospital'},
+  {r:'isha', jp:'医者', en:'Doctor'},
+  {r:'yakkyoku', jp:'薬局', en:'Pharmacy'},
+  {r:'shiken', jp:'試験', en:'Exam'},
+  {r:'chotto', jp:'ちょっと', en:'A little / excuse me'},
+  {r:'kudasai', jp:'ください', en:'Please (give me)'},
+  {r:'douzo', jp:'どうぞ', en:'Here you go'},
+  {r:'yoroshiku', jp:'よろしく', en:'Nice to meet you / please treat me well'},
+  {r:'omedetou', jp:'おめでとう', en:'Congratulations'},
+  {r:'ganbatte', jp:'頑張って', en:'Good luck / do your best'},
+  {r:'ureshii', jp:'嬉しい', en:'Happy'},
+  {r:'kanashii', jp:'悲しい', en:'Sad'},
+  {r:'kowai', jp:'怖い', en:'Scary'},
+  {r:'kirei', jp:'綺麗', en:'Beautiful/clean'},
+  {r:'yama', jp:'山', en:'Mountain'},
+  {r:'umi', jp:'海', en:'Sea'},
+  {r:'kawa', jp:'川', en:'River'},
+  {r:'shiro', jp:'城', en:'Castle'},
+  {r:'machi', jp:'町', en:'Town / city'},
+  {r:'kuni', jp:'国', en:'Country'},
+  {r:'denwa', jp:'電話', en:'Phone'},
+  {r:'pasokon', jp:'パソコン', en:'Computer / PC'},
+  {r:'netto', jp:'ネット', en:'Internet'},
+  {r:'okane', jp:'お金', en:'Money'},
+  {r:'ryokou', jp:'旅行', en:'Trip / travel'},
+  {r:'shigoto', jp:'仕事', en:'Work / job'},
+];
+
+/* --- helpers & UI wiring --- */
+const el = id => document.getElementById(id);
+el('year').textContent = new Date().getFullYear();
+
+// theme handling
+const root = document.documentElement, themeBtn = el('themeBtn'), themeList = document.getElementById('themeList');
+function applyTheme(t){
+  ['dark','ocean','sunset'].forEach(c=> root.classList.remove(c));
+  if(t==='dark'){ root.classList.add('dark'); themeBtn.textContent='Dark ▾'; localStorage.setItem('pr-theme','dark'); }
+  else if(t==='ocean'){ root.classList.add('ocean'); themeBtn.textContent='Ocean ▾'; localStorage.setItem('pr-theme','ocean'); }
+  else if(t==='sunset'){ root.classList.add('sunset'); themeBtn.textContent='Sunset ▾'; localStorage.setItem('pr-theme','sunset'); }
+  else { themeBtn.textContent='Light ▾'; localStorage.setItem('pr-theme','light'); }
+  // glow when non-light
+  themeBtn.classList.toggle('glow', t !== 'light');
 }
+const saved = localStorage.getItem('pr-theme') || 'ocean';
+applyTheme(saved);
+themeBtn.addEventListener('click', ()=> { themeList.style.display = themeList.style.display === 'block' ? 'none' : 'block'; });
+themeList.addEventListener('click', e => { const t=e.target.closest('.theme-item'); if(!t) return; applyTheme(t.dataset.theme); themeList.style.display='none';});
+document.addEventListener('click', (e)=> { if(!document.getElementById('themeSelectWrap')?.contains(e.target)) themeList.style.display='none'; });
 
-// speech
-let voiceEnabled = true;
-function speak(text, lang='ja-JP'){
-  if(!voiceEnabled) return;
+// sidebar
+const sidebar = el('sidebar'), hambBtn = el('hambBtn'), closeSidebar = el('closeSidebar'), openSidebarBtn = el('openSidebar');
+hambBtn.addEventListener('click', ()=> { sidebar.classList.add('open'); sidebar.setAttribute('aria-hidden','false'); });
+closeSidebar.addEventListener('click', ()=> { sidebar.classList.remove('open'); sidebar.setAttribute('aria-hidden','true'); });
+openSidebarBtn.addEventListener('click', ()=> { sidebar.classList.add('open'); sidebar.setAttribute('aria-hidden','false'); });
+
+// main UI pieces
+const kanaGrid = el('kanaGrid'), searchInput = el('searchInput'), vocabList = el('vocabList');
+const btnHira = el('btnHira'), btnKata = el('btnKata'), btnVocab = el('btnVocab'), btnQuiz = el('btnQuiz');
+
+// state
+let currentView = 'hiragana'; // hiragana | katakana | vocab
+let currentKana = HIRAGANA.slice();
+let currentVocab = VOCAB.slice();
+let filteredVocab = currentVocab.slice();
+
+// render helpers
+function speak(text){
   if(!('speechSynthesis' in window)) return;
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = lang;
-  // try to pick a Japanese voice if available
-  const voices = speechSynthesis.getVoices();
-  const v = voices.find(x=>x.lang && x.lang.startsWith('ja')) || voices[0];
-  if(v) u.voice = v;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.lang = 'ja-JP';
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(msg);
 }
 
-// render kana grid
-const kanaGrid = $('kanaGrid'), kanaSelect = $('kanaSelect'), kanaFilter = $('kanaFilter');
-function renderKana(){
-  const set = kanaSelect.value === 'katakana' ? KATAKANA : HIRAGANA;
-  const q = (kanaFilter.value || '').trim().toLowerCase();
-  kanaGrid.innerHTML = '';
-  for(const [jp, rom] of set){
-    if(q && !(jp.includes(q) || rom.includes(q))) continue;
-    const el = document.createElement('div');
-    el.className = 'kana';
-    el.innerHTML = `<div class="jp">${jp}</div><div class="rom">${rom}</div>`;
-    el.onclick = ()=> { speak(jp); flashTemp(jp + ' — ' + rom, 1200); };
-    kanaGrid.appendChild(el);
-  }
-}
-kanaSelect.addEventListener('change', renderKana);
-kanaFilter.addEventListener('input', renderKana);
-
-// flash temporary message
-function flashTemp(text, ms=1000){
-  const flash = document.createElement('div');
-  flash.className = 'card';
-  flash.style.position='fixed';
-  flash.style.left='50%';
-  flash.style.top='12%';
-  flash.style.transform='translateX(-50%)';
-  flash.style.zIndex=9999;
-  flash.textContent = text;
-  document.body.appendChild(flash);
-  setTimeout(()=> flash.remove(), ms);
-}
-
-// Vocabulary: default starter list (small)
-const DEFAULT_VOCAB = [
-  {jp:'こんにちは', rom:'konnichiwa', en:'Hello'},
-  {jp:'ありがとう', rom:'arigatou', en:'Thank you'},
-  {jp:'さようなら', rom:'sayounara', en:'Goodbye'},
-  {jp:'はい', rom:'hai', en:'Yes'},
-  {jp:'いいえ', rom:'iie', en:'No'},
-  {jp:'日本', rom:'nihon', en:'Japan'},
-  {jp:'水', rom:'mizu', en:'Water'}
-];
-
-const STORAGE_KEY = 'pr_jp_vocab_v1';
-let vocab = loadVocab();
-function loadVocab(){
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) { localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_VOCAB)); return [...DEFAULT_VOCAB]; }
-    return JSON.parse(raw);
-  }catch(e){
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_VOCAB));
-    return [...DEFAULT_VOCAB];
-  }
-}
-function saveVocab(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(vocab)); renderVocabList(); updateCount(); }
-
-// render vocab list
-const vocabListEl = $('vocabList'), v_search = $('v_search'), v_jp = $('v_jp'), v_rom = $('v_rom'), v_en = $('v_en');
-function renderVocabList(){
-  const q = (v_search.value || '').toLowerCase();
-  vocabListEl.innerHTML = '';
-  const arr = vocab.filter(it => {
-    if(!q) return true;
-    return (it.jp||'').toLowerCase().includes(q) || (it.rom||'').toLowerCase().includes(q) || (it.en||'').toLowerCase().includes(q);
-  });
-  if(arr.length === 0) { vocabListEl.innerHTML = '<div class="muted">No vocab — add some!</div>'; return; }
-  for(let i=0;i<arr.length;i++){
-    const it = arr[i];
-    const row = document.createElement('div');
-    row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='6px 4px';
-    row.innerHTML = `<div><strong style="font-size:15px">${it.jp}</strong> <span class="muted">(${it.rom})</span><div class="muted">${it.en}</div></div>`;
-    const actions = document.createElement('div');
-    actions.style.display='flex'; actions.style.gap='6px';
-    const s = document.createElement('button'); s.className='btn ghost'; s.textContent='Speak'; s.onclick=()=> speak(it.jp);
-    const toDeck = document.createElement('button'); toDeck.className='btn'; toDeck.textContent='Use'; toDeck.onclick=()=> { startFromVocab(it); };
-    const del = document.createElement('button'); del.className='btn ghost'; del.textContent='Delete'; del.onclick=()=>{
-      if(!confirm('Delete this word?')) return;
-      const idx = vocab.indexOf(it); if(idx>=0) vocab.splice(idx,1); saveVocab();
-    };
-    actions.appendChild(s); actions.appendChild(toDeck); actions.appendChild(del);
-    row.appendChild(actions); vocabListEl.appendChild(row);
+function renderKana(list){
+  kanaGrid.innerHTML='';
+  for(const [char,rom] of list){
+    const tile = document.createElement('div'); tile.className='kana-tile';
+    tile.innerHTML = `<div class="jp">${char}</div><div class="rom">${rom}</div>`;
+    tile.addEventListener('click', ()=> { speak(rom); tile.animate([{transform:'scale(1)'},{transform:'scale(0.96)'},{transform:'scale(1)'}],{duration:220}); });
+    kanaGrid.appendChild(tile);
   }
 }
 
-// add vocab
-$('addV').addEventListener('click', ()=>{
-  const jp = v_jp.value.trim(), rom = v_rom.value.trim(), en = v_en.value.trim();
-  if(!jp || !en) return alert('Add at least Japanese and English meaning.');
-  vocab.unshift({jp, rom, en});
-  v_jp.value=''; v_rom.value=''; v_en.value='';
-  saveVocab();
-});
-
-// search filter
-v_search.addEventListener('input', renderVocabList);
-
-// export/import
-$('exportBtn').addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify(vocab, null, 2)], {type:'application/json'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'vocab-pirateruler.json'; a.click(); URL.revokeObjectURL(a.href);
-});
-$('importBtn').addEventListener('click', ()=> $('importFile').click());
-$('importFile').addEventListener('change', (e)=>{
-  const f = e.target.files[0]; if(!f) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try{
-      const parsed = JSON.parse(ev.target.result);
-      if(!Array.isArray(parsed)) throw new Error('Invalid file');
-      vocab = parsed.concat(vocab); saveVocab();
-      alert('Imported ' + parsed.length + ' items.');
-    }catch(err){ alert('Import failed: ' + err.message); }
-  };
-  reader.readAsText(f);
-  e.target.value='';
-});
-
-// flashcards
-let deck = [...vocab]; let deckIndex = 0; let showBack = false; let autoplayTimer = null;
-function updateDeckFromFilter(){
-  const q = ( $('deckFilter').value || '').toLowerCase();
-  deck = vocab.filter(it => !q || it.jp.toLowerCase().includes(q) || it.rom.toLowerCase().includes(q) || it.en.toLowerCase().includes(q) );
-}
-function showCard(idx){
-  if(deck.length === 0){ $('flashCard').textContent = 'No cards'; return; }
-  deckIndex = (idx + deck.length) % deck.length;
-  const it = deck[deckIndex];
-  if(showBack){
-    $('flashCard').className = 'flash back';
-    $('flashCard').textContent = `${it.en} — ${it.rom || ''}`;
-  } else {
-    $('flashCard').className = 'flash';
-    $('flashCard').textContent = it.jp;
+function renderVocab(list, limit=50){
+  vocabList.innerHTML='';
+  const toShow = list.slice(0, limit);
+  for(const w of toShow){
+    const row = document.createElement('div'); row.className='vocab-row';
+    row.innerHTML = `<div class="vocab-left"><div class="jp-large">${w.jp}</div><div class="rom-small">${w.r} — ${w.en}</div></div><div class="small muted">🔊</div>`;
+    row.addEventListener('click', ()=> { speak(w.r); });
+    vocabList.appendChild(row);
+  }
+  if(list.length > limit){
+    const more = document.createElement('button'); more.className='btn ghost'; more.textContent='Show all'; more.addEventListener('click', ()=> renderVocab(list, list.length));
+    vocabList.appendChild(more);
   }
 }
-$('nextBtn').addEventListener('click', ()=> { showBack=false; updateDeckFromFilter(); showCard(deckIndex+1); if($('autoPlay').checked) autoAdvance(); });
-$('prevBtn').addEventListener('click', ()=> { showBack=false; updateDeckFromFilter(); showCard(deckIndex-1); });
-$('flipBtn').addEventListener('click', ()=> { showBack = !showBack; showCard(deckIndex); });
-$('flashCard').addEventListener('click', ()=> {
-  // flip & speak
-  showBack = !showBack; showCard(deckIndex);
-  if(!showBack) speak(deck[deckIndex].jp);
+
+// initial view
+renderKana(currentKana);
+
+// controls
+btnHira.addEventListener('click', ()=> { currentView='hiragana'; currentKana = HIRAGANA.slice(); renderKana(currentKana); });
+btnKata.addEventListener('click', ()=> { currentView='katakana'; currentKana = KATAKANA.slice(); renderKana(currentKana); });
+btnVocab.addEventListener('click', ()=> { currentView='vocab'; renderVocab(currentVocab, 50); });
+btnQuiz.addEventListener('click', ()=> { startQuiz(); });
+
+// search
+searchInput.addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){
+    if(currentView==='hiragana' || currentView==='katakana') renderKana(currentKana);
+    else renderVocab(currentVocab,50);
+    return;
+  }
+  // search kana (by romaji) and vocab by romaji/kana/english
+  const filteredKana = currentKana.filter(([ch,rom]) => rom.includes(q) || ch.includes(q));
+  const filtered = currentVocab.filter(w => w.r.toLowerCase().includes(q) || w.jp.includes(q) || w.en.toLowerCase().includes(q));
+  if(currentView==='hiragana' || currentView==='katakana') renderKana(filteredKana.length ? filteredKana : currentKana.filter(([ch,rom]) => rom.includes(q) || ch.includes(q)));
+  else renderVocab(filtered, 200);
 });
-function startFromVocab(item){
-  deck = [item]; deckIndex = 0; showBack=false; showCard(0);
-}
-$('startStudy').addEventListener('click', ()=> { updateDeckFromFilter(); deckIndex=0; showBack=false; showCard(0); });
 
-// autoplay
-function autoAdvance(){
-  clearTimeout(autoplayTimer);
-  autoplayTimer = setTimeout(()=> { $('nextBtn').click(); }, 2500);
+// menu links in sidebar
+document.getElementById('menuKana').addEventListener('click', ()=> { sidebar.classList.remove('open'); currentView='hiragana'; renderKana(HIRAGANA); window.scrollTo({top:0,behavior:'smooth'}); });
+document.getElementById('menuVocab').addEventListener('click', ()=> { sidebar.classList.remove('open'); currentView='vocab'; renderVocab(currentVocab,50); window.scrollTo({top:0,behavior:'smooth'}); });
+document.getElementById('menuQuiz').addEventListener('click', ()=> { sidebar.classList.remove('open'); startQuiz(); window.scrollTo({top:0,behavior:'smooth'}); });
+
+// download vocab json
+el('downloadVocab').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(VOCAB,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'jp-vocab.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+
+// quick actions
+el('jumpQuiz').addEventListener('click', startQuiz);
+el('showAllV').addEventListener('click', ()=> { currentView='vocab'; renderVocab(currentVocab, currentVocab.length); window.scrollTo({top:0,behavior:'smooth'}); });
+el('shuffleQuiz').addEventListener('click', ()=> { shuffleArray(QUIZPOOL); alert('Quiz order shuffled'); });
+
+// ---------------- Quiz logic ----------------
+const quizPanel = el('quizPanel'), quizProgress = el('quizProgress'), quizQuestion = el('quizQuestion'), quizPrompt = el('quizPrompt');
+const quizChoices = el('quizChoices'), nextBtn = el('nextBtn'), restartBtn = el('restartBtn'), quizResult = el('quizResult');
+
+let QUIZPOOL = []; // will be filled with 100 items
+let QUIZIDX = 0, SCORE = 0, CURRENT_Q = null;
+
+function shuffleArray(arr){
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
 }
 
-// quiz
-$('startQuiz').addEventListener('click', ()=> startQuiz());
-$('shuffleBtn').addEventListener('click', ()=> { vocab = shuffle(vocab); saveVocab(); flashTemp('Shuffled'); });
+function buildQuizPool(){
+  // Ensure at least 100 items: if VOCAB length < 100, repeat with slight variations; else pick 100
+  const pool = [];
+  // prefer unique vocab
+  for(const v of VOCAB) pool.push(v);
+  while(pool.length < 100){ pool.push(...VOCAB.slice(0, Math.min(VOCAB.length, 100-pool.length))); }
+  // trim to 100
+  const trimmed = pool.slice(0,100).map(item => ({...item}));
+  shuffleArray(trimmed);
+  QUIZPOOL = trimmed;
+}
 
 function startQuiz(){
-  const mode = $('quizMode').value;
-  const n = parseInt($('numQ').value || '5',10);
-  if(vocab.length < 4) return alert('Add more vocab (min 4) for a meaningful quiz.');
-  const pool = shuffle([...vocab]).slice(0, Math.min(n, vocab.length));
-  renderQuiz(pool, mode);
+  buildQuizPool();
+  QUIZIDX = 0; SCORE = 0; quizPanel.style.display='block'; el('quizResult').textContent=''; nextBtn.disabled = true;
+  showQuestion();
 }
-function renderQuiz(list, mode){
-  const area = $('quizArea'); area.innerHTML='';
-  let score = 0, idx=0;
-  function nextQuestion(){
-    if(idx >= list.length){ area.innerHTML = `<div class="small">Quiz complete — Score ${score}/${list.length}</div>`; return; }
-    const q = list[idx];
-    // build choices
-    const choices = [q];
-    while(choices.length < 4){
-      const c = vocab[Math.floor(Math.random()*vocab.length)];
-      if(!choices.includes(c)) choices.push(c);
-    }
-    const shuffled = shuffle(choices);
-    const qHtml = document.createElement('div'); qHtml.className='card';
-    const prompt = mode === 'jp->en' ? q.jp : q.en;
-    qHtml.innerHTML = `<div style="font-weight:800;margin-bottom:8px">${prompt}</div>`;
-    for(const c of shuffled){
-      const btn = document.createElement('button'); btn.className='btn ghost'; btn.style.display='block'; btn.style.width='100%'; btn.style.margin='6px 0';
-      btn.textContent = mode === 'jp->en' ? `${c.en} ${c.rom ? '• ' + c.rom : ''}` : (c.jp + (c.rom ? ' • ' + c.rom : ''));
-      btn.onclick = ()=> {
-        const correct = c === q;
-        if(correct){ btn.style.background='linear-gradient(90deg,var(--accent-start),var(--accent-end))'; btn.style.color='#fff'; score++; speak(q.jp); }
-        else { btn.style.background='#ffdede'; btn.style.color='#000'; }
-        // reveal and next
-        Array.from(qHtml.querySelectorAll('button')).forEach(b=>b.disabled=true);
-        setTimeout(()=> { idx++; nextQuestion(); }, 900);
-      };
-      qHtml.appendChild(btn);
-    }
-    area.innerHTML = '';
-    area.appendChild(qHtml);
+
+function showQuestion(){
+  if(QUIZIDX >= QUIZPOOL.length){
+    // finished
+    quizQuestion.textContent = 'Quiz complete';
+    quizPrompt.textContent = `Score: ${SCORE} / ${QUIZPOOL.length}`;
+    quizChoices.innerHTML = '';
+    quizProgress.textContent = `${QUIZIDX} / ${QUIZPOOL.length}`;
+    quizResult.textContent = 'You finished the 100-question quiz. Restart to play again.';
+    return;
   }
-  nextQuestion();
+  CURRENT_Q = QUIZPOOL[QUIZIDX];
+  quizProgress.textContent = `${QUIZIDX+1} / ${QUIZPOOL.length}`;
+  // ask English -> select romaji (or kana)
+  quizQuestion.textContent = `${CURRENT_Q.en}`;
+  quizPrompt.textContent = `Choose the correct Japanese (romaji shown)`;
+  // build choices: correct + 3 random romaji
+  const choices = [CURRENT_Q.r];
+  while(choices.length < 4){
+    const cand = VOCAB[Math.floor(Math.random()*VOCAB.length)].r;
+    if(!choices.includes(cand)) choices.push(cand);
+  }
+  shuffleArray(choices);
+  quizChoices.innerHTML = '';
+  for(const c of choices){
+    const btn = document.createElement('button'); btn.className='choice'; btn.textContent=c;
+    btn.addEventListener('click', ()=> handleChoice(btn, c));
+    quizChoices.appendChild(btn);
+  }
+  nextBtn.disabled = true;
+  quizResult.textContent = '';
 }
 
-// helpers
-function shuffle(a){ return a.slice().sort(()=>Math.random()-0.5); }
+function handleChoice(button, choice){
+  // disable all
+  Array.from(quizChoices.children).forEach(b=>b.disabled=true);
+  if(choice === CURRENT_Q.r){
+    button.classList.add('correct');
+    SCORE++;
+    quizResult.textContent = 'Correct ✓';
+  } else {
+    button.classList.add('wrong');
+    // highlight correct
+    Array.from(quizChoices.children).forEach(b=>{ if(b.textContent === CURRENT_Q.r) b.classList.add('correct'); });
+    quizResult.textContent = `Wrong — correct answer: ${CURRENT_Q.r} (${CURRENT_Q.jp})`;
+  }
+  nextBtn.disabled = false;
+}
 
-// sidebar controls
-$('sidebarBtn').addEventListener('click', ()=> {
-  const s = document.querySelector('.sidebar');
-  s.style.display = s.style.display === 'none' || !s.style.display ? 'block' : 'none';
+// next and restart
+nextBtn.addEventListener('click', ()=>{
+  QUIZIDX++; showQuestion();
 });
-$('jumpLocal').addEventListener('click', ()=> {
-  flashTemp('Local time: ' + new Date().toLocaleString(), 2200);
-});
-$('clearData').addEventListener('click', ()=> {
-  if(!confirm('Clear all saved vocab & progress?')) return;
-  localStorage.removeItem(STORAGE_KEY);
-  vocab = loadVocab();
-  renderVocabList(); updateCount();
-  flashTemp('Data cleared');
-});
-$('speakSettings').addEventListener('click', ()=> {
-  voiceEnabled = !voiceEnabled; flashTemp('Voice ' + (voiceEnabled ? 'on' : 'off'));
-});
+restartBtn.addEventListener('click', ()=> { buildQuizPool(); QUIZIDX=0; SCORE=0; showQuestion(); });
 
-// theme
-const themeBtn = $('themeBtn'), themeList = document.getElementById('themeList');
-themeBtn.addEventListener('click', ()=> { themeList.style.display = themeList.style.display==='block' ? 'none' : 'block'; });
-document.querySelectorAll('.t').forEach(el => el.addEventListener('click', ()=>{
-  const t = el.dataset.theme;
-  ['dark','ocean','sunset'].forEach(c=>document.documentElement.classList.remove(c));
-  if(t !== 'light') document.documentElement.classList.add(t);
-  themeBtn.textContent = (t.charAt(0).toUpperCase()+t.slice(1)) + ' ▾';
-  localStorage.setItem('jp-theme', t);
-  themeList.style.display='none';
-}));
-(function initTheme(){ const t = localStorage.getItem('jp-theme') || 'ocean'; if(t!=='light') document.documentElement.classList.add(t); themeBtn.textContent = (t.charAt(0).toUpperCase()+t.slice(1)) + ' ▾'; })();
+// init quiz pool for quick start
+buildQuizPool();
 
-// small init
-renderKana();
-renderVocabList();
-updateCount();
-
-// update count
-function updateCount(){ $('countInfo').textContent = vocab.length + ' items'; }
-
-// keyboard shortcuts: space flip, n next
-document.addEventListener('keydown', e=>{
-  if(e.code === 'Space'){ e.preventDefault(); $('flipBtn').click(); }
-  if(e.key === 'n'){ $('nextBtn').click(); }
-});
-
-// small utility: when vocab changes update deck if studying
-$('vocabList').addEventListener('click', ()=> { /* noop to let events propagate */ });
-
-// allow deck filter to trigger
-$('deckFilter')?.addEventListener('input', ()=> updateDeckFromFilter() );
+// utility: show vocab on load
+renderVocab(currentVocab, 50);
 
 </script>
 </body>
