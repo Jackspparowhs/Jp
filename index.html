@@ -1,651 +1,80 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Learn Japanese — PirateRuler.com</title>
-<meta name="description" content="Learn Japanese (Hiragana, Katakana, Vocab). Offline, one page. By PirateRuler." />
-<style>
-  :root{
-    --bg:#f3f7fb; --card:#fff; --muted:#6b7480; --text:#072028;
-    --accent-start:#6b7dff; --accent-end:#0bb3ff; --glass: rgba(11,17,28,0.04);
-    --radius:14px; --shadow-sm: 0 8px 24px rgba(3,12,30,0.08);
-  }
-  html.dark { --bg:#071225; --card:#061028; --muted:#98a7bf; --text:#e9f1ff; --glass: rgba(255,255,255,0.02); --accent-start:#5ab3ff; --accent-end:#6b7dff; --shadow-sm: 0 8px 24px rgba(0,0,0,0.45); }
-  html.ocean { --bg:#e8f7fb; --card:#ffffff; --muted:#4f6b75; --text:#063242; --accent-start:#00c2d1; --accent-end:#2b9fff; }
-  html.sunset { --bg:#fff6f8; --card:#fff; --muted:#7a6b77; --text:#2a1020; --accent-start:#ff7aa2; --accent-end:#ffb86b; }
-
-  *{box-sizing:border-box}
-  body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;background:linear-gradient(180deg,var(--bg), #eaf7ff);color:var(--text);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-  .container{max-width:1100px;margin:12px auto;padding:14px}
-
-  /* Header */
-  .header{display:flex;align-items:center;justify-content:space-between;padding:14px;border-radius:14px;background:linear-gradient(90deg, rgba(107,125,255,0.06), rgba(11,179,255,0.02));box-shadow:var(--shadow-sm)}
-  .brand{display:flex;gap:12px;align-items:center}
-  .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent-start),var(--accent-end));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
-  .brand-title .title{font-weight:900;font-size:18px;margin:0}
-  .brand-title .by{font-size:12px;color:var(--muted);margin-top:2px}
-
-  .header-actions{display:flex;gap:10px;align-items:center}
-  .btn{padding:9px 12px;border-radius:10px;border:none;cursor:pointer;font-weight:700}
-  .btn.ghost{background:transparent;border:1px solid rgba(0,0,0,0.06)}
-  .btn.theme{background:linear-gradient(90deg,var(--accent-start),var(--accent-end));color:white;border:0} /* no glow */
-
-  .hamb{width:46px;height:46px;border-radius:10px;background:var(--glass);display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
-
-  /* Hero */
-  .hero{margin-top:14px;padding:20px;border-radius:14px;background:var(--card);box-shadow:var(--shadow-sm)}
-  .hero .big{font-size:24px;font-weight:900;margin:0}
-  .hero .small{color:var(--muted);margin-top:6px}
-
-  /* grid */
-  .grid {display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:14px}
-  @media(max-width:980px){.grid{grid-template-columns:1fr}}
-
-  .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow-sm);border:1px solid rgba(0,0,0,0.04)}
-  .hint{color:var(--muted);font-size:13px;margin-bottom:8px}
-
-  input[type="text"]{width:100%;padding:12px;border-radius:10px;border:1px solid rgba(10,20,40,0.06);font-size:15px;background:transparent;color:var(--text)}
-
-  /* kana grid */
-  .kana-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:12px}
-  @media(max-width:600px){.kana-grid{grid-template-columns:repeat(5,1fr)}}
-  .kana{background:linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));border-radius:12px;padding:18px;text-align:center;cursor:pointer;border:1px solid rgba(0,0,0,0.04)}
-  .kana .char{font-size:28px;font-weight:800}
-  .kana .rom{font-size:13px;color:var(--muted);margin-top:6px}
-
-  .controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
-  .linkish{color:var(--accent-start);font-weight:800;cursor:pointer;font-size:14px}
-
-  /* feature panel / sidebar (right) */
-  aside{align-self:start}
-  .feature-panel{position:sticky;top:18px;padding:12px;border-radius:12px;background:var(--card);box-shadow:var(--shadow-sm)}
-  .features{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:700px){.features{grid-template-columns:1fr}}
-
-  .feature{padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.98));display:flex;gap:12px;align-items:center}
-  .f-icon{width:48px;height:48px;border-radius:10px;background:linear-gradient(135deg,var(--accent-start),var(--accent-end));display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
-
-  /* quiz */
-  .quiz-area{margin-top:12px}
-  .question{font-weight:900;font-size:20px;margin-bottom:12px}
-  .choices{display:grid;gap:8px}
-  .choice{padding:12px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);cursor:pointer;background:linear-gradient(180deg, rgba(0,0,0,0.01), rgba(0,0,0,0.02));font-weight:700}
-  .choice.correct{border-color:green;color:green}
-  .choice.wrong{border-color:#cc3a3a;color:#cc3a3a}
-
-  /* footer */
-  footer{margin-top:16px;padding:16px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.96));text-align:center;box-shadow:var(--shadow-sm)}
-  .visit{padding:10px 18px;border-radius:999px;background:linear-gradient(90deg,#ff7aa2 0%, #6b7dff 100%);color:white;font-weight:800;text-decoration:none;display:inline-block}
-  .muted{color:var(--muted);font-size:13px}
-
-  /* sidebar panel (offcanvas) */
-  .sidebar{position:fixed;top:0;right:0;height:100vh;width:360px;max-width:94vw;transform:translateX(120%);transition:transform .28s cubic-bezier(.2,.9,.3,1);z-index:999;background:var(--card);box-shadow:-40px 0 80px rgba(2,8,20,0.25);padding:20px;border-left:1px solid rgba(0,0,0,0.04)}
-  .sidebar.open{transform:translateX(0)}
-  .sidebar .nav-list{display:flex;flex-direction:column;gap:12px;margin-top:8px}
-  .sidebar a{display:block;padding:12px;border-radius:10px;background:linear-gradient(180deg, rgba(0,0,0,0.01), rgba(0,0,0,0.02));font-weight:700;color:var(--text)}
-
-  /* small helpers */
-  .row{display:flex;gap:8px}
-  .center{text-align:center}
-  .small-muted{font-size:12px;color:var(--muted)}
-
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anime Image Hub</title>
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<div class="container">
 
-  <!-- header -->
-  <header class="header" role="banner">
-    <div class="brand">
-      <div class="logo">PR</div>
-      <div class="brand-title">
-        <div class="title">Learn Japanese</div>
-        <div class="by">by PirateRuler.com</div>
-      </div>
+<!-- HEADER -->
+<header>
+    <div class="logo">Anime Image Hub</div>
+    <input type="text" id="searchInput" placeholder="Search images (use tags e.g. 'one_piece', '2girls')...">
+    <button id="menuBtn">☰</button>
+</header>
+
+<!-- SIDEBAR -->
+<aside id="sidebar">
+    <h2>Categories</h2>
+    <div id="tagList">Loading tags...</div>
+
+    <h2 style="margin-top:25px;">Pages</h2>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a href="#privacy">Privacy Policy</a>
+    <a href="#terms">Terms of Service</a>
+</aside>
+
+<!-- BACKDROP -->
+<div id="backdrop"></div>
+
+<!-- MAIN IMAGE GRID -->
+<main id="imageGrid"></main>
+
+<!-- LOADING INDICATOR -->
+<div id="loader">Loading...</div>
+
+<!-- MODAL -->
+<div id="modal">
+    <div id="modalContent">
+        <span id="closeModal">&times;</span>
+
+        <img id="modalImage" src="" alt="">
+        <div id="modalInfo"></div>
+
+        <a id="downloadBtn" download>Download Image</a>
     </div>
+</div>
 
-    <div class="header-actions" role="navigation">
-      <div class="theme-select" id="themeSelectWrap" style="position:relative">
-        <button id="themeBtn" class="btn theme" title="Theme">Ocean ▾</button>
-        <div id="themeList" style="display:none;position:absolute;right:0;top:46px;background:var(--card);padding:8px;border-radius:8px;box-shadow:var(--shadow-sm)">
-          <div class="theme-item" data-theme="light" style="padding:8px;cursor:pointer">Light</div>
-          <div class="theme-item" data-theme="dark" style="padding:8px;cursor:pointer">Dark</div>
-          <div class="theme-item" data-theme="ocean" style="padding:8px;cursor:pointer">Ocean</div>
-          <div class="theme-item" data-theme="sunset" style="padding:8px;cursor:pointer">Sunset</div>
-        </div>
-      </div>
+<!-- FOOTER PAGES -->
+<div id="pages">
 
-      <div class="hamb" id="hambBtn" title="Open menu" aria-controls="sidebar">☰</div>
-    </div>
-  </header>
+<section id="about">
+<h1>About</h1>
+<p>Anime Image Hub is a professional platform that fetches high-quality anime artwork directly from the Danbooru API. Our mission is to deliver a clean, premium, and smooth browsing experience with fast loading, beautiful grids, and responsive design.</p>
+</section>
 
-  <!-- hero -->
-  <section class="hero" aria-labelledby="heroTitle">
-    <h1 id="heroTitle" class="big">Japanese Starter — Hiragana, Katakana, Vocab</h1>
-    <p class="small">Interactive charts, flashcards & quizzes — offline and private. Click kana to hear it. Try the 100-question quiz to test yourself.</p>
-  </section>
+<section id="contact">
+<h1>Contact</h1>
+<p>For support or suggestions, reach out anytime:</p>
+<p>Email: support@animeimagehub.com</p>
+<p>We typically reply within 24 hours.</p>
+</section>
 
-  <!-- main -->
-  <main class="grid" role="main">
-    <div>
-      <!-- kana + search -->
-      <section class="card" aria-labelledby="kanaTitle">
-        <h2 id="kanaTitle">Kana Charts</h2>
-        <div class="hint">Switch chart, search romaji, kana or English</div>
+<section id="privacy">
+<h1>Privacy Policy</h1>
+<p>We do not store personal data. Search queries are processed locally and only sent to fetch images directly from Danbooru. No cookies, no tracking, and no third-party analytics.</p>
+</section>
 
-        <div class="controls">
-          <div class="row" role="tablist" aria-label="Chart switch">
-            <button class="btn ghost" id="btnHira">Hiragana</button>
-            <button class="btn ghost" id="btnKata">Katakana</button>
-            <button class="btn ghost" id="btnVocab">Vocab</button>
-            <button class="btn ghost" id="btnQuiz">Start 100 Q Quiz</button>
-          </div>
-          <div style="flex:1"></div>
-          <div style="width:260px"><input id="search" type="text" placeholder="Search romaji, kana, or english (e.g. 'ka' or 'water')" /></div>
-        </div>
-
-        <div id="chartsWrap">
-          <div id="kanaGrid" class="kana-grid" aria-live="polite"></div>
-        </div>
-      </section>
-
-      <!-- vocab / flashcards -->
-      <section id="vocabCard" class="card" style="margin-top:12px;display:none">
-        <h2>Vocabulary</h2>
-        <div class="hint">Click a vocab card to hear the Japanese. Use search to filter.</div>
-        <div id="vocabList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:12px"></div>
-      </section>
-
-      <!-- quiz -->
-      <section id="quizCard" class="card" style="margin-top:12px;display:none">
-        <h2>100 Question Quiz</h2>
-        <div class="hint">Multiple choice — progress and score shown.</div>
-        <div id="quizArea" class="quiz-area">
-          <div id="quizIntro">
-            <p class="small-muted">You will get 100 questions drawn from the vocab list. Each question shows a Japanese word; pick the correct English meaning.</p>
-            <div class="row" style="margin-top:8px">
-              <button id="startQuiz" class="btn theme">Start Quiz (100)</button>
-              <button id="cancelQuiz" class="btn ghost">Cancel</button>
-            </div>
-          </div>
-
-          <div id="quizUI" style="display:none">
-            <div class="row" style="justify-content:space-between;align-items:center">
-              <div class="small-muted" id="qProgress">Q 0 / 100</div>
-              <div class="small-muted" id="qScore">Score: 0</div>
-            </div>
-            <div id="questionBox" style="margin-top:10px">
-              <div class="question" id="questionText"></div>
-              <div class="choices" id="choicesWrap"></div>
-            </div>
-            <div style="margin-top:12px" class="row">
-              <button id="nextQ" class="btn theme" style="display:none">Next</button>
-              <button id="endQuiz" class="btn ghost">End Quiz</button>
-            </div>
-          </div>
-
-          <div id="quizSummary" style="display:none;margin-top:12px"></div>
-        </div>
-      </section>
-    </div>
-
-    <!-- right features / panel -->
-    <aside>
-      <div class="feature-panel">
-        <div class="panel-title" style="font-weight:900">Why this app?</div>
-        <div class="features">
-          <div class="feature"><div class="f-icon">🔒</div><div><div style="font-weight:800">Private</div><div class="f-desc small-muted">All data runs in your browser — no servers or APIs.</div></div></div>
-          <div class="feature"><div class="f-icon">⚡</div><div><div style="font-weight:800">Offline</div><div class="f-desc small-muted">Works from a single HTML file.</div></div></div>
-          <div class="feature"><div class="f-icon">🧠</div><div><div style="font-weight:800">Practice</div><div class="f-desc small-muted">Charts, flashcards and a 100-question quiz.</div></div></div>
-          <div class="feature"><div class="f-icon">🎧</div><div><div style="font-weight:800">Audio</div><div class="f-desc small-muted">Click kana/vocab to hear pronunciation (browser speech).</div></div></div>
-        </div>
-
-        <div style="margin-top:12px">
-          <div style="font-weight:900;margin-bottom:6px">Quick actions</div>
-          <div class="row" style="gap:8px;flex-wrap:wrap">
-            <button id="jumpTop" class="btn ghost">Jump to Top</button>
-            <button id="showVocab" class="btn ghost">Show Vocab</button>
-            <button id="showQuiz" class="btn ghost">Open Quiz</button>
-          </div>
-        </div>
-
-        <div style="margin-top:12px" class="small-muted">Tip: click any kana or vocab card to hear it.</div>
-      </div>
-    </aside>
-  </main>
-
-  <!-- footer -->
-  <footer>
-    <a class="visit" href="https://pirateruler.com" target="_blank" rel="noopener noreferrer">Visit PirateRuler.com</a>
-    <div style="height:10px"></div>
-    <small class="muted">© <span id="year"></span> Learn Japanese — PirateRuler.com</small>
-  </footer>
-
-  <!-- sidebar offcanvas -->
-  <aside id="sidebar" class="sidebar" aria-hidden="true">
-    <div style="display:flex;justify-content:flex-end"><button id="closeSidebar" class="btn ghost">Close</button></div>
-    <h3 style="margin-top:6px">PirateRuler Links</h3>
-    <p class="small-muted">Quick links & backup resources</p>
-    <div class="nav-list">
-      <a href="https://pirateruler.com/post/about.html" target="_blank">About — PirateRuler</a>
-      <a href="https://pirateruler.com/post/privacy.html" target="_blank">Privacy Policy</a>
-      <a href="https://pirateruler.com/post/contact.html" target="_blank">Contact</a>
-      <a href="https://pirateruler.com/post/terms.html" target="_blank">Terms & Service</a>
-    </div>
-    <div style="margin-top:18px" class="small-muted">Backup & resources:<br><a href="https://pirateruler.com" target="_blank">pirateruler.com</a></div>
-  </aside>
+<section id="terms">
+<h1>Terms of Service</h1>
+<p>By using Anime Image Hub, you agree that all images belong to their respective creators on Danbooru. This site simply displays them through a public API and does not host or claim ownership.</p>
+</section>
 
 </div>
 
-<script>
-/* ---------- static data: kana and vocab ---------- */
-
-/* Basic hiragana table (romaji lowercase) */
-const HIRAGANA = [
-  ['a','あ'],['i','い'],['u','う'],['e','え'],['o','お'],
-  ['ka','か'],['ki','き'],['ku','く'],['ke','け'],['ko','こ'],
-  ['sa','さ'],['shi','し'],['su','す'],['se','せ'],['so','そ'],
-  ['ta','た'],['chi','ち'],['tsu','つ'],['te','て'],['to','と'],
-  ['na','な'],['ni','に'],['nu','ぬ'],['ne','ね'],['no','の'],
-  ['ha','は'],['hi','ひ'],['fu','ふ'],['he','へ'],['ho','ほ'],
-  ['ma','ま'],['mi','み'],['mu','む'],['me','め'],['mo','も'],
-  ['ya','や'],['yu','ゆ'],['yo','よ'],
-  ['ra','ら'],['ri','り'],['ru','る'],['re','れ'],['ro','ろ'],
-  ['wa','わ'],['wo','を'],['n','ん']
-];
-
-/* Katakana (same romaji map) */
-const KATAKANA = HIRAGANA.map(([r,k])=>{
-  // convert hiragana to katakana by unicode offset (simple method where applicable)
-  const hira = k;
-  let kata = '';
-  for (let ch of hira){
-    const code = ch.charCodeAt(0);
-    if (code >= 0x3041 && code <= 0x3096) kata += String.fromCharCode(code + 0x60);
-    else kata += ch;
-  }
-  return [r, kata];
-});
-
-/* Vocab list (Japanese, romaji, english) — a medium-sized built-in set.
-   You can expand it later; quiz picks 100 unique questions from this list.
-*/
-const VOCAB = [
-  /* 120+ entries to give the quiz variety */
-  {jp:'こんにちは', rom:'konnichiwa', en:'hello'},
-  {jp:'ありがとう', rom:'arigatou', en:'thank you'},
-  {jp:'お願いします', rom:'onegai shimasu', en:'please'},
-  {jp:'はい', rom:'hai', en:'yes'},
-  {jp:'いいえ', rom:'iie', en:'no'},
-  {jp:'さようなら', rom:'sayounara', en:'goodbye'},
-  {jp:'おはよう', rom:'ohayou', en:'good morning'},
-  {jp:'こんばんは', rom:'konbanwa', en:'good evening'},
-  {jp:'ごめんなさい', rom:'gomen nasai', en:'sorry'},
-  {jp:'すみません', rom:'sumimasen', en:'excuse me'},
-  {jp:'水', rom:'mizu', en:'water'},
-  {jp:'お茶', rom:'ocha', en:'tea'},
-  {jp:'ご飯', rom:'gohan', en:'rice; meal'},
-  {jp:'パン', rom:'pan', en:'bread'},
-  {jp:'肉', rom:'niku', en:'meat'},
-  {jp:'魚', rom:'sakana', en:'fish'},
-  {jp:'野菜', rom:'yasai', en:'vegetable'},
-  {jp:'果物', rom:'kudamono', en:'fruit'},
-  {jp:'店', rom:'mise', en:'shop; store'},
-  {jp:'学校', rom:'gakkou', en:'school'},
-  {jp:'先生', rom:'sensei', en:'teacher'},
-  {jp:'学生', rom:'gakusei', en:'student'},
-  {jp:'友達', rom:'tomodachi', en:'friend'},
-  {jp:'家', rom:'ie', en:'house'},
-  {jp:'部屋', rom:'heya', en:'room'},
-  {jp:'車', rom:'kuruma', en:'car'},
-  {jp:'駅', rom:'eki', en:'station'},
-  {jp:'道', rom:'michi', en:'road; way'},
-  {jp:'橋', rom:'hashi', en:'bridge'},
-  {jp:'店員', rom:'tenin', en:'clerk'},
-  {jp:'病院', rom:'byouin', en:'hospital'},
-  {jp:'薬', rom:'kusuri', en:'medicine'},
-  {jp:'時間', rom:'jikan', en:'time'},
-  {jp:'今日', rom:'kyou', en:'today'},
-  {jp:'明日', rom:'ashita', en:'tomorrow'},
-  {jp:'昨日', rom:'kinou', en:'yesterday'},
-  {jp:'朝', rom:'asa', en:'morning'},
-  {jp:'夜', rom:'yoru', en:'night'},
-  {jp:'今', rom:'ima', en:'now'},
-  {jp:'年', rom:'toshi', en:'year'},
-  {jp:'月', rom:'tsuki', en:'month; moon'},
-  {jp:'日', rom:'hi / nichi', en:'day; sun'},
-  {jp:'分', rom:'fun', en:'minute'},
-  {jp:'人', rom:'hito', en:'person'},
-  {jp:'名前', rom:'namae', en:'name'},
-  {jp:'電話', rom:'denwa', en:'telephone'},
-  {jp:'住所', rom:'juusho', en:'address'},
-  {jp:'国', rom:'kuni', en:'country'},
-  {jp:'日本', rom:'nihon / nippon', en:'Japan'},
-  {jp:'英語', rom:'eigo', en:'English (language)'},
-  {jp:'日本語', rom:'nihongo', en:'Japanese (language)'},
-  {jp:'読む', rom:'yomu', en:'to read'},
-  {jp:'書く', rom:'kaku', en:'to write'},
-  {jp:'聞く', rom:'kiku', en:'to listen; ask'},
-  {jp:'話す', rom:'hanasu', en:'to speak'},
-  {jp:'食べる', rom:'taberu', en:'to eat'},
-  {jp:'飲む', rom:'nomu', en:'to drink'},
-  {jp:'見る', rom:'miru', en:'to see'},
-  {jp:'行く', rom:'iku', en:'to go'},
-  {jp:'来る', rom:'kuru', en:'to come'},
-  {jp:'買う', rom:'kau', en:'to buy'},
-  {jp:'売る', rom:'uru', en:'to sell'},
-  {jp:'使う', rom:'tsukau', en:'to use'},
-  {jp:'作る', rom:'tsukuru', en:'to make'},
-  {jp:'開ける', rom:'akeru', en:'to open'},
-  {jp:'閉める', rom:'shimeru', en:'to close'},
-  {jp:'入る', rom:'hairu', en:'to enter'},
-  {jp:'出る', rom:'deru', en:'to exit'},
-  {jp:'立つ', rom:'tatsu', en:'to stand'},
-  {jp:'座る', rom:'suwaru', en:'to sit'},
-  {jp:'歩く', rom:'aruku', en:'to walk'},
-  {jp:'走る', rom:'hashiru', en:'to run'},
-  {jp:'買い物', rom:'kaimono', en:'shopping'},
-  {jp:'旅行', rom:'ryokou', en:'travel'},
-  {jp:'空港', rom:'kuukou', en:'airport'},
-  {jp:'天気', rom:'tenki', en:'weather'},
-  {jp:'雨', rom:'ame', en:'rain'},
-  {jp:'雪', rom:'yuki', en:'snow'},
-  {jp:'風', rom:'kaze', en:'wind'},
-  {jp:'暑い', rom:'atsui', en:'hot'},
-  {jp:'寒い', rom:'samui', en:'cold'},
-  {jp:'高い', rom:'takai', en:'expensive; tall'},
-  {jp:'安い', rom:'yasui', en:'cheap'},
-  {jp:'新しい', rom:'atarashii', en:'new'},
-  {jp:'古い', rom:'furui', en:'old'},
-  {jp:'大きい', rom:'ookii', en:'big'},
-  {jp:'小さい', rom:'chiisai', en:'small'},
-  {jp:'長い', rom:'nagai', en:'long'},
-  {jp:'短い', rom:'mijikai', en:'short'},
-  {jp:'速い', rom:'hayai', en:'fast'},
-  {jp:'遅い', rom:'osoi', en:'slow'},
-  {jp:'強い', rom:'tsuyoi', en:'strong'},
-  {jp:'弱い', rom:'yowai', en:'weak'},
-  {jp:'好き', rom:'suki', en:'like'},
-  {jp:'嫌い', rom:'kirai', en:'dislike'},
-  {jp:'楽しい', rom:'tanoshii', en:'fun'},
-  {jp:'悲しい', rom:'kanashii', en:'sad'},
-  {jp:'忙しい', rom:'isogashii', en:'busy'},
-  {jp:'暇', rom:'hima', en:'free (time)'},
-  {jp:'映画', rom:'eiga', en:'movie'},
-  {jp:'音楽', rom:'ongaku', en:'music'},
-  {jp:'本', rom:'hon', en:'book'},
-  {jp:'店', rom:'mise', en:'shop'},
-  {jp:'財布', rom:'saifu', en:'wallet'},
-  {jp:'鍵', rom:'kagi', en:'key'},
-  {jp:'時計', rom:'tokei', en:'watch; clock'},
-  {jp:'写真', rom:'shashin', en:'photo'},
-  {jp:'問題', rom:'mondai', en:'problem; question'},
-  {jp:'答え', rom:'kotae', en:'answer'},
-  {jp:'理由', rom:'riyuu', en:'reason'}
-];
-
-/* ---------- utility helpers ---------- */
-const $ = sel => document.querySelector(sel);
-const $$ = sel => Array.from(document.querySelectorAll(sel));
-
-/* speech (use browser TTS) */
-function speak(text, lang='ja-JP'){
-  if(!window.speechSynthesis) return;
-  const ut = new SpeechSynthesisUtterance(text);
-  ut.lang = lang;
-  // try to pick Japanese voice if available
-  window.speechSynthesis.getVoices(); // warm up
-  setTimeout(()=> {
-    const voices = window.speechSynthesis.getVoices();
-    const v = voices.find(x=>x.lang && x.lang.startsWith('ja')) || voices[0];
-    if(v) ut.voice = v;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(ut);
-  }, 0);
-}
-
-/* ---------- render kana grid ---------- */
-let currentChart = 'hira'; // 'hira' | 'kata' | 'vocab'
-const kanaGrid = $('#kanaGrid');
-const vocabListEl = $('#vocabList');
-const vocabCard = $('#vocabCard');
-
-function renderKana(filter=''){
-  kanaGrid.innerHTML = '';
-  const data = currentChart === 'hira' ? HIRAGANA : KATAKANA;
-  const q = filter.trim().toLowerCase();
-  const filtered = data.filter(([r, k]) => {
-    if(!q) return true;
-    return r.includes(q) || k.includes(q) || r.startsWith(q);
-  });
-  // render grid (cap at 50 results to avoid too many)
-  filtered.slice(0, 100).forEach(([romaji, kana])=>{
-    const d = document.createElement('div');
-    d.className = 'kana';
-    d.innerHTML = `<div class="char">${kana}</div><div class="rom">${romaji}</div>`;
-    d.addEventListener('click', ()=> speak(kana));
-    kanaGrid.appendChild(d);
-  });
-}
-
-/* render vocab list */
-function renderVocab(filter=''){
-  vocabListEl.innerHTML = '';
-  const q = filter.trim().toLowerCase();
-  const filtered = VOCAB.filter(v => {
-    if(!q) return true;
-    return v.jp.includes(q) || v.rom.toLowerCase().includes(q) || v.en.toLowerCase().includes(q);
-  });
-  filtered.slice(0,200).forEach(v => {
-    const card = document.createElement('div');
-    card.style.background = 'linear-gradient(180deg,#fff,#fbfdff)';
-    card.style.padding = '12px';
-    card.style.borderRadius = '10px';
-    card.style.border = '1px solid rgba(0,0,0,0.04)';
-    card.style.cursor = 'pointer';
-    card.innerHTML = `<div style="font-size:18px;font-weight:800">${v.jp}</div><div style="font-size:13px;color:var(--muted);margin-top:6px">${v.rom} — ${v.en}</div>`;
-    card.addEventListener('click', ()=> speak(v.jp));
-    vocabListEl.appendChild(card);
-  });
-}
-
-/* ---------- search binding ---------- */
-$('#search').addEventListener('input', e => {
-  const v = e.target.value;
-  if(currentChart === 'vocab'){
-    renderVocab(v);
-  } else {
-    renderKana(v);
-  }
-});
-
-/* ---------- chart switch buttons ---------- */
-$('#btnHira').addEventListener('click', ()=> {
-  currentChart = 'hira'; $('#vocabCard').style.display='none'; $('#quizCard').style.display='none';
-  $('#chartsWrap').style.display='block'; renderKana($('#search').value||'');
-});
-$('#btnKata').addEventListener('click', ()=> {
-  currentChart = 'kata'; $('#vocabCard').style.display='none'; $('#quizCard').style.display='none';
-  $('#chartsWrap').style.display='block'; renderKana($('#search').value||'');
-});
-$('#btnVocab').addEventListener('click', ()=> {
-  currentChart = 'vocab'; $('#chartsWrap').style.display='none'; $('#quizCard').style.display='none';
-  $('#vocabCard').style.display='block'; renderVocab($('#search').value||'');
-});
-$('#btnQuiz').addEventListener('click', ()=> {
-  currentChart = 'quiz'; $('#chartsWrap').style.display='none'; $('#vocabCard').style.display='none';
-  $('#quizCard').style.display='block';
-});
-
-/* initial render */
-renderKana();
-$('#year').textContent = new Date().getFullYear();
-
-/* ---------- sidebar open/close ---------- */
-const sidebar = $('#sidebar'), hambBtn = $('#hambBtn'), closeSidebar = $('#closeSidebar');
-function openSidebar(){ sidebar.classList.add('open'); sidebar.setAttribute('aria-hidden','false'); closeSidebar.focus(); }
-function closeSB(){ sidebar.classList.remove('open'); sidebar.setAttribute('aria-hidden','true'); }
-hambBtn.addEventListener('click', openSidebar);
-closeSidebar.addEventListener('click', closeSB);
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeSB(); });
-document.addEventListener('click', e => {
-  if(!sidebar.classList.contains('open')) return;
-  if(!sidebar.contains(e.target) && !hambBtn.contains(e.target)) closeSB();
-});
-
-/* jumpTop / quick actions */
-$('#jumpTop').addEventListener('click', ()=>window.scrollTo({top:0,behavior:'smooth'}));
-$('#showVocab').addEventListener('click', ()=> { $('#btnVocab').click(); window.scrollTo({top:document.querySelector('#vocabCard').offsetTop-20, behavior:'smooth'}); });
-$('#showQuiz').addEventListener('click', ()=> { $('#btnQuiz').click(); window.scrollTo({top:document.querySelector('#quizCard').offsetTop-20, behavior:'smooth'}); });
-
-/* theme picker */
-const themeBtn = $('#themeBtn'), themeList = document.getElementById('themeList');
-themeBtn.addEventListener('click', () => { themeList.style.display = themeList.style.display === 'block' ? 'none' : 'block'; });
-themeList.addEventListener('click', e => {
-  const t = e.target.closest('.theme-item'); if(!t) return;
-  const theme = t.dataset.theme;
-  document.documentElement.classList.remove('dark','ocean','sunset');
-  if(theme === 'dark') document.documentElement.classList.add('dark');
-  else if(theme === 'ocean') document.documentElement.classList.add('ocean');
-  else if(theme === 'sunset') document.documentElement.classList.add('sunset');
-  themeBtn.textContent = (theme === 'dark' ? 'Dark ▾' : theme === 'ocean' ? 'Ocean ▾' : theme === 'sunset' ? 'Sunset ▾' : 'Light ▾');
-  localStorage.setItem('site-theme', theme);
-  themeList.style.display = 'none';
-});
-const saved = localStorage.getItem('site-theme'); if(saved) { document.documentElement.classList.add(saved==='dark'?'dark':saved==='ocean'?'ocean':saved==='sunset'?'sunset':''); themeBtn.textContent = (saved==='dark'?'Dark ▾':saved==='ocean'?'Ocean ▾':saved==='sunset'?'Sunset ▾':'Light ▾'); }
-
-/* ---------- Quiz logic (100 questions) ---------- */
-const startQuizBtn = $('#startQuiz');
-const cancelQuiz = $('#cancelQuiz');
-const quizIntro = $('#quizIntro');
-const quizUI = $('#quizUI');
-const quizSummary = $('#quizSummary');
-const questionText = $('#questionText');
-const choicesWrap = $('#choicesWrap');
-const qProgress = $('#qProgress');
-const qScore = $('#qScore');
-const nextQ = $('#nextQ');
-const endQuiz = $('#endQuiz');
-
-let quizDeck = []; // array of {vocab, correctIndex, choices: []}
-let currentQ = 0;
-let score = 0;
-let answered = false;
-
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
-
-function buildQuizDeck(){
-  const pool = [...VOCAB];
-  if(pool.length < 100){
-    // if not enough items, duplicate with small variations (should not happen often)
-    while(pool.length < 120) pool.push(...VOCAB);
-  }
-  pool.length = pool.length; // ensure array
-  shuffle(pool);
-  const deck = [];
-  const used = new Set();
-  let i = 0;
-  while(deck.length < 100 && i < pool.length){
-    const v = pool[i++];
-    if(used.has(v.jp)) continue;
-    used.add(v.jp);
-    // build 3 distractors
-    const others = VOCAB.filter(x=>x.jp !== v.jp);
-    shuffle(others);
-    const choices = [v.en, others[0].en, others[1].en, others[2].en];
-    shuffle(choices);
-    deck.push({vocab:v, choices, correct: choices.indexOf(v.en)});
-  }
-  return deck;
-}
-
-function showQuestion(){
-  answered = false; nextQ.style.display = 'none';
-  const item = quizDeck[currentQ];
-  questionText.textContent = `Q${currentQ+1}: ${item.vocab.jp}  —  (${item.vocab.rom})`;
-  choicesWrap.innerHTML = '';
-  item.choices.forEach((c, idx) => {
-    const btn = document.createElement('div');
-    btn.className = 'choice';
-    btn.textContent = c;
-    btn.addEventListener('click', () => {
-      if(answered) return;
-      answered = true;
-      if(idx === item.correct){
-        btn.classList.add('correct'); score++;
-        qScore.textContent = `Score: ${score}`;
-      } else {
-        btn.classList.add('wrong');
-        // highlight correct
-        const correctEl = Array.from(choicesWrap.children)[item.correct];
-        if(correctEl) correctEl.classList.add('correct');
-      }
-      nextQ.style.display = (currentQ < quizDeck.length-1) ? 'inline-block' : 'none';
-      if(currentQ === quizDeck.length-1) endQuiz.style.display='inline-block';
-    });
-    choicesWrap.appendChild(btn);
-  });
-  qProgress.textContent = `Q ${currentQ+1} / ${quizDeck.length}`;
-  // auto play audio for the japanese
-  speak(item.vocab.jp);
-}
-
-startQuizBtn.addEventListener('click', ()=>{
-  quizDeck = buildQuizDeck();
-  currentQ = 0; score = 0;
-  $('#quizIntro').style.display = 'none';
-  quizUI.style.display = 'block';
-  $('#quizSummary').style.display = 'none';
-  qScore.textContent = `Score: ${score}`;
-  showQuestion();
-});
-
-cancelQuiz.addEventListener('click', ()=> {
-  $('#quizIntro').style.display = 'block';
-  quizUI.style.display = 'none';
-});
-
-nextQ.addEventListener('click', ()=>{
-  if(!answered) return;
-  currentQ++;
-  if(currentQ >= quizDeck.length){ finishQuiz(); return; }
-  showQuestion();
-});
-
-endQuiz.addEventListener('click', finishQuiz);
-
-function finishQuiz(){
-  quizUI.style.display = 'none';
-  quizSummary.style.display = 'block';
-  quizSummary.innerHTML = `<div style="font-weight:900">Quiz complete</div>
-    <div style="margin-top:8px">Score: <strong>${score} / ${quizDeck.length}</strong></div>
-    <div style="margin-top:8px">${Math.round((score/quizDeck.length)*100)}% correct</div>
-    <div style="margin-top:12px"><button class="btn theme" id="retry">Retry</button> <button class="btn ghost" id="backToStart">Back</button></div>`;
-  $('#retry').addEventListener('click', ()=> { $('#quizIntro').style.display='none'; quizUI.style.display='block'; quizSummary.style.display='none'; startQuizBtn.click(); });
-  $('#backToStart').addEventListener('click', ()=> { $('#quizIntro').style.display='block'; quizSummary.style.display='none'; quizUI.style.display='none'; });
-}
-
-/* ---------- interactions: initial states ---------- */
-$('#btnHira').click(); // default
-$('#vocabCard').style.display = 'none';
-$('#quizCard').style.display = 'none';
-
-/* show vocab when user clicks link-like text */
-$$('.linkish').forEach(el=>el.addEventListener('click', ()=>$('#btnVocab').click()));
-
-/* make sure clicking a vocab/search shows appropriate */
-$('#search').addEventListener('keydown', e => { if(e.key === 'Enter'){ if(currentChart !== 'vocab') { $('#btnVocab').click(); } renderVocab($('#search').value); } });
-
-/* make visit button in footer clickable (already anchor) */
-
-/* small responsiveness for sidebar width */
-function updateSidebarWidth(){ if(window.innerWidth < 420) sidebar.style.width = '94vw'; else sidebar.style.width = '360px'; }
-window.addEventListener('resize', updateSidebarWidth);
-updateSidebarWidth();
-
-/* ensure voices warmed up */
-if(window.speechSynthesis) window.speechSynthesis.getVoices();
-</script>
+<script src="app.js"></script>
 </body>
 </html>
